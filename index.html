@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panduan Barang — Karyawan Baru</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3a;
+    --accent: #4ade80;
+    --accent2: #38bdf8;
+    --accent3: #f59e0b;
+    --accent4: #f472b6;
+    --accent5: #a78bfa;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --card: #1e2130;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .badge {
+    background: var(--accent);
+    color: #000;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+  }
+  h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .subtitle { color: var(--muted); font-size: 12px; margin-left: auto; }
+
+  /* SEARCH */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 0;
+  }
+  .search-wrap input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 10px 14px 10px 38px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color: var(--accent2); }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin-top: 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 8px 16px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: #fff; border-bottom-color: var(--accent); }
+  .tab .count {
+    display: inline-block;
+    background: var(--border);
+    border-radius: 9px;
+    padding: 1px 6px;
+    font-size: 10px;
+    margin-left: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* MAIN */
+  main { padding: 20px 24px; max-width: 900px; }
+
+  /* CATEGORY SECTION */
+  .cat-section { display: none; }
+  .cat-section.visible { display: block; }
+
+  .cat-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
+  }
+  .cat-header .icon { font-size: 20px; }
+  .cat-header h2 { font-size: 15px; font-weight: 600; }
+  .cat-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ITEM CARDS */
+  .items-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .item-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    transition: border-color 0.2s;
+  }
+  .item-card:hover { border-color: #3a3d4a; }
+  .item-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+  }
+  .item-desc {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .item-tip {
+    font-size: 11px;
+    color: var(--accent3);
+    margin-top: 5px;
+    font-style: italic;
+  }
+  .item-tag {
+    font-size: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 2px 7px;
+    border-radius: 4px;
+    height: fit-content;
+    white-space: nowrap;
+    align-self: start;
+    margin-top: 2px;
+  }
+  .tag-pasif { background: #1e2d1a; color: var(--accent); border: 1px solid #2a4020; }
+  .tag-aktif { background: #1a2535; color: var(--accent2); border: 1px solid #203040; }
+  .tag-kabel { background: #2d1a2a; color: var(--accent4); border: 1px solid #402030; }
+  .tag-alat  { background: #2d2a1a; color: var(--accent3); border: 1px solid #40380a; }
+  .tag-aksesoris { background: #221a2d; color: var(--accent5); border: 1px solid #302040; }
+
+  /* NO RESULTS */
+  .no-results {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+    display: none;
+  }
+  .no-results.show { display: block; }
+
+  /* SEARCH MODE */
+  .search-mode .cat-section { display: block; }
+  .search-mode .cat-header { display: none; }
+  .item-card.hidden { display: none; }
+
+  @media(min-width: 600px) {
+    .items-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <span class="badge">KARYAWAN BARU</span>
+    <h1>Panduan Barang</h1>
+    <span class="subtitle">131 item · 5 kategori</span>
+  </div>
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Cari nama barang..." autocomplete="off">
+  </div>
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-cat="all">Semua <span class="count">131</span></div>
+    <div class="tab" data-cat="teknisi">Teknisi Internet <span class="count">38</span></div>
+    <div class="tab" data-cat="kelistrikan">Kelistrikan <span class="count">34</span></div>
+    <div class="tab" data-cat="pelengkap">Pelengkap Internet <span class="count">34</span></div>
+    <div class="tab" data-cat="cctv">CCTV <span class="count">19</span></div>
+    <div class="tab" data-cat="batrai">Batrai <span class="count">6</span></div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============================= TEKNISI INTERNET ============================= -->
+<section class="cat-section visible" data-cat="teknisi">
+  <div class="cat-header" style="background:#111d14;border-color:var(--accent)">
+    <span class="icon">🔦</span>
+    <div>
+      <h2>TEKNISI INTERNET</h2>
+      <p>Perangkat & kabel untuk instalasi jaringan fiber optik</p>
+    </div>
+  </div>
+  <div class="items-grid">
+
+    <div class="item-card" data-name="ISI ODP 1:16 XUMIKURA GRAD A">
+      <div>
+        <div class="item-name">ISI ODP 1:16 XUMIKURA GRAD A</div>
+        <div class="item-desc">Splitter/pembagi sinyal optik yang dipasang di dalam kotak ODP. Membagi 1 sinyal dari provider jadi 16 cabang ke pelanggan. Angka 1:16 artinya 1 input → 16 output.</div>
+        <div class="item-tip">💡 XUMIKURA = merk, Grade A = kualitas terbaik</div>
+      </div>
+      <span class="item-tag tag-pasif">pasif</span>
+    </div>
+
+    <div class="item-card" data-name="ISI ODP 8 POWER FULL">
+      <div>
+        <div class="item-name">ISI ODP 8 POWER FULL</div>
+        <div class="item-desc">Splitter 1:8, membagi 1 sinyal optik ke 8 pelanggan. Cocok untuk perumahan kecil atau gang sempit. "Power Full" = kualitas sinyal bagus.</div>
+      </div>
+      <span class="item-tag tag-pasif">pasif</span>
+    </div>
+
+    <div class="item-card" data-name="RASIO PUJITOMO berbagai">
+      <div>
+        <div class="item-name">RASIO xx:xx PUJITOMO (berbagai varian)</div>
+        <div class="item-desc">Optical tap / pembagi sinyal dengan rasio tidak merata. Misalnya RASIO 10:90 artinya 10% sinyal ke satu arah dan 90% ke arah lain. Dipakai saat jaringan tidak bisa dipasang splitter biasa. Merk PUJITOMO = lokal.</div>
+        <div class="item-tip">💡 Varian yang ada: 2:98, 3:97, 4:96, 5:95, 8:92, 10:90, 15:85, 20:80, 25:75, 30:70, 35:65, 40:60, 50:50</div>
+      </div>
+      <span class="item-tag tag-pasif">pasif</span>
+    </div>
+
+    <div class="item-card" data-name="ADAPTER SC">
+      <div>
+        <div class="item-name">ADAPTER SC</div>
+        <div class="item-desc">Konektor penghubung dua kabel fiber optik tipe SC (Subscriber Connector). Dipasang di panel ODP supaya kabel bisa disambung-lepas dengan mudah tanpa dipotong.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="PROTEC / PROTEC KICIL">
+      <div>
+        <div class="item-name">PROTEC / PROTEC KICIL</div>
+        <div class="item-desc">Pelindung sambungan splice (heat shrink splice protector). Dipasang di titik sambungan kabel fiber optik yang sudah di-fusion splice, melindungi dari patah dan debu. "Kicil" = ukuran lebih kecil.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="PASIF SPLITTER 1:2 OPTIC">
+      <div>
+        <div class="item-name">PASIF SPLITTER 1:2 OPTIC</div>
+        <div class="item-desc">Splitter paling kecil, membagi 1 sinyal optik ke 2 arah. Tidak butuh listrik (pasif). Dipakai di titik percabangan yang kecil.</div>
+      </div>
+      <span class="item-tag tag-pasif">pasif</span>
+    </div>
+
+    <div class="item-card" data-name="PEMOTONG KABEL">
+      <div>
+        <div class="item-name">PEMOTONG KABEL</div>
+        <div class="item-desc">Tang atau gunting khusus untuk memotong kabel dengan hasil potongan yang rapi dan presisi. Penting untuk fiber optik karena potongan yang tidak rata bisa bikin sinyal jelek.</div>
+      </div>
+      <span class="item-tag tag-alat">alat</span>
+    </div>
+
+    <div class="item-card" data-name="LASER OPTIC">
+      <div>
+        <div class="item-name">LASER OPTIC</div>
+        <div class="item-desc">Pena laser merah untuk mengecek jalur kabel fiber optik. Cahaya laser dimasukkan ke ujung kabel, kalau kabel normal cahaya keluar di ujung lain. Kalau ada putus/tekukan, cahaya bocor di titik itu.</div>
+        <div class="item-tip">💡 Alat dasar wajib teknisi fiber optik</div>
+      </div>
+      <span class="item-tag tag-alat">alat</span>
+    </div>
+
+    <div class="item-card" data-name="PATCHCORD / PATCHCORE">
+      <div>
+        <div class="item-name">PATCHCORD / PATCHCORE (berbagai varian)</div>
+        <div class="item-desc">Kabel fiber optik pendek (biasanya 1–3 meter) dengan konektor di kedua ujung, siap pakai. Dipakai untuk menghubungkan ONU ke ODP, atau OLT ke panel di ruang server. Tersedia: XUMIKURA (premium) dan kuning (standar).</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="CLEM KABEL 4 MM">
+      <div>
+        <div class="item-name">CLEM KABEL 4 MM</div>
+        <div class="item-desc">Klip/klem kecil untuk menempel dan merapikan kabel di tembok atau tiang. Ukuran 4mm cocok untuk kabel fiber optik kecil. Dipaku ke tembok supaya kabel tidak menjuntai.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="ONU F460 GARANSI 1 HARI">
+      <div>
+        <div class="item-name">ONU F460</div>
+        <div class="item-desc">Optical Network Unit (ONT/modem fiber). Perangkat di rumah pelanggan yang mengubah sinyal fiber optik jadi sinyal internet WiFi/LAN. Dihubungkan ke kabel fiber dari ODP. Garansi 1 hari = barang refurbished/bekas.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="ONU GM 220 GARANSI 1 HARI">
+      <div>
+        <div class="item-name">ONU GM 220</div>
+        <div class="item-desc">ONU merek/model berbeda (GM 220). Fungsi sama dengan F460, mengubah sinyal fiber optik ke internet. Model ini cocok untuk provider tertentu.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="CABEL 4 CORE">
+      <div>
+        <div class="item-name">CABEL 4 CORE</div>
+        <div class="item-desc">Kabel fiber optik berisi 4 serat (inti) di dalam 1 selubung. Dipakai untuk instalasi ke pelanggan yang butuh jalur lebih banyak atau cadangan. 4 inti = bisa dipakai 4 sambungan berbeda.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="CABEL 1 CORE FALCOM / CABELLINK">
+      <div>
+        <div class="item-name">CABEL 1 CORE (Falcom/Cabellink)</div>
+        <div class="item-desc">Kabel fiber optik 1 serat, yang paling umum dipakai untuk sambungan ke 1 pelanggan (drop cable). Ringan, mudah dipasang di tiang atau tembok. Falcom & Cabellink = merk berbeda.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="CABEL FALCOM 2 CORE">
+      <div>
+        <div class="item-name">CABEL FALCOM 2 CORE</div>
+        <div class="item-desc">Kabel fiber 2 serat merk Falcom. Sering dipakai untuk koneksi yang butuh serat cadangan (1 aktif, 1 backup) atau untuk sambungan 2 pelanggan bersamaan.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="KABEL 12 CORE FALCOM">
+      <div>
+        <div class="item-name">KABEL 12 CORE FALCOM</div>
+        <div class="item-desc">Kabel fiber optik 12 serat. Dipakai sebagai kabel backbone (jalur utama) dari pusat ke ODP di lapangan. 12 serat = bisa melayani banyak pelanggan sekaligus.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="KOTAK ODP 8 / KOTAK ODP 16">
+      <div>
+        <div class="item-name">KOTAK ODP 8 / KOTAK ODP 16</div>
+        <div class="item-desc">Optical Distribution Point — kotak panel yang dipasang di tiang listrik atau tembok. Tempat splitter dipasang dan kabel fiber disambung ke pelanggan. ODP 8 = max 8 pelanggan, ODP 16 = max 16 pelanggan.</div>
+        <div class="item-tip">💡 Ini "kotak"-nya saja, splitter (ISI ODP) dijual terpisah</div>
+      </div>
+      <span class="item-tag tag-pasif">pasif</span>
+    </div>
+
+    <div class="item-card" data-name="SPF 10 KM TARMOC BEKAS">
+      <div>
+        <div class="item-name">SPF 10 KM TARMOC BEKAS</div>
+        <div class="item-desc">Modul SFP (Small Form-factor Pluggable) transceiver — dipasang ke slot switch/OLT untuk mengirim/terima sinyal fiber optik jarak jauh hingga 10 km. Merk Tarmoc, kondisi bekas.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="JOIN BOX">
+      <div>
+        <div class="item-name">JOIN BOX</div>
+        <div class="item-desc">Kotak sambungan kabel — tempat untuk menyambung dua kabel (fiber/listrik) secara permanen di lapangan. Biasanya dipasang di tengah kabel panjang yang putus atau perlu disambung.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="LAN 1 M HITAM PABRIK">
+      <div>
+        <div class="item-name">LAN 1 M HITAM PABRIK</div>
+        <div class="item-desc">Kabel LAN (ethernet) 1 meter, hitam, buatan pabrik (sudah ada konektor RJ45). Dipakai untuk menghubungkan ONU ke komputer, switch, atau router pelanggan.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================= KELISTRIKAN UMUM ============================= -->
+<section class="cat-section" data-cat="kelistrikan">
+  <div class="cat-header" style="background:#1d1a11;border-color:var(--accent3)">
+    <span class="icon">⚡</span>
+    <div>
+      <h2>KELISTRIKAN UMUM</h2>
+      <p>Lampu, colokan, stop kontak, adaptor & aksesoris listrik</p>
+    </div>
+  </div>
+  <div class="items-grid">
+
+    <div class="item-card" data-name="NITTO SALASIBAN">
+      <div>
+        <div class="item-name">NITTO SALASIBAN</div>
+        <div class="item-desc">Isolasi/lakban listrik merk Nitto. Dipakai untuk membungkus sambungan kabel agar tidak korslet dan terlindung dari air. Kualitas Nitto dikenal bagus dan tahan lama.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="COLOKAN 4 LOBANG 5METER / 1.5METER">
+      <div>
+        <div class="item-name">COLOKAN 4 LOBANG 5M / 1.5M</div>
+        <div class="item-desc">Kabel ekstensi/stop kontak dengan 4 lubang colokan. Dipakai untuk memperpanjang jangkauan listrik dan menambah colokan. Tersedia panjang 5 meter dan 1.5 meter.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="STEKER CABANG 3">
+      <div>
+        <div class="item-name">STEKER CABANG 3</div>
+        <div class="item-desc">T-adapter / percabangan 3 colokan. Ditancapkan ke 1 colokan tembok dan jadi 3 colokan. Praktis untuk menambah colokan tanpa kabel panjang.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="RCA 1.5 METER">
+      <div>
+        <div class="item-name">RCA 1.5 METER</div>
+        <div class="item-desc">Kabel audio/video RCA (konektor merah-putih-kuning). Dipakai untuk menghubungkan perangkat lama seperti DVD player, kamera CCTV analog, atau set-top box ke TV.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="REMOT ANDORIT TV / REMOT TV UNIVERSAL">
+      <div>
+        <div class="item-name">REMOT ANDORIT TV / REMOT TV UNIVERSAL</div>
+        <div class="item-desc">Remote TV pengganti. "Andorit" = merk lokal, "Universal" = bisa diprogram untuk berbagai merk TV. Dijual sebagai pengganti remote asli yang hilang/rusak.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="DIMER LAMPU VISALUX">
+      <div>
+        <div class="item-name">DIMER LAMPU VISALUX</div>
+        <div class="item-desc">Dimmer — saklar pengatur kecerahan lampu. Dipasang menggantikan saklar biasa, bisa mengatur lampu dari redup sampai terang. Merk VISALUX.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="STOP KONTAK TIMER">
+      <div>
+        <div class="item-name">STOP KONTAK TIMER</div>
+        <div class="item-desc">Stop kontak yang bisa diatur jadwal otomatis ON/OFF. Misalnya: lampu taman nyala jam 18.00 dan mati jam 06.00 secara otomatis tanpa harus manual.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="STOP KONTAK">
+      <div>
+        <div class="item-name">STOP KONTAK</div>
+        <div class="item-desc">Stop kontak standar untuk dipasang di tembok. Dijual sebagai suku cadang pengganti stop kontak yang rusak atau untuk instalasi baru.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="JECK AUDIO">
+      <div>
+        <div class="item-name">JACK AUDIO</div>
+        <div class="item-desc">Konektor jack audio 3.5mm. Dipakai untuk menyambung headset, speaker, atau mikrofon ke perangkat. Dijual sebagai suku cadang untuk memperbaiki kabel audio yang putus.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="ADAPTOR 3V 1A / ADAPTOR LAMPU SELANG LED">
+      <div>
+        <div class="item-name">ADAPTOR 3V & Adaptor Lampu Selang LED</div>
+        <div class="item-desc">Adaptor adalah pengubah listrik PLN (220V) ke tegangan lebih kecil yang dibutuhkan perangkat. Adaptor 3V untuk perangkat kecil. Adaptor lampu selang LED untuk menghidupkan lampu hias/dekorasi LED.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="POWER SUPLAI 400 WATT">
+      <div>
+        <div class="item-name">POWER SUPLAI 400 WATT</div>
+        <div class="item-desc">Power supply besar 400 watt untuk peralatan yang butuh daya tinggi. Bukan untuk laptop, tapi untuk perangkat networking, CCTV banyak, atau lampu banyak sekaligus.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="DINAMO PUTAR KIPAS ANGIN">
+      <div>
+        <div class="item-name">DINAMO PUTAR KIPAS ANGIN</div>
+        <div class="item-desc">Motor listrik pengganti untuk kipas angin yang rusak. Dijual sebagai suku cadang — kalau kipas tidak berputar, biasanya dinamonya yang mati dan bisa diganti ini.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="LAMPU DISPLAY / SOROT / TAMAN / DARURAT / PENGHANGAT">
+      <div>
+        <div class="item-name">Berbagai Jenis Lampu</div>
+        <div class="item-desc">
+          <b>Lampu Display</b> — lampu untuk etalase/showcase toko.<br>
+          <b>Lampu Sorot (20/30/50W)</b> — lampu outdoor terang untuk area parkir, gudang, atau papan nama.<br>
+          <b>Lampu Taman 5W</b> — lampu dekoratif untuk taman/halaman.<br>
+          <b>Lampu Darurat</b> — lampu dengan baterai internal, menyala otomatis saat listrik mati.<br>
+          <b>Lampu Penghangat Makanan</b> — lampu infrared untuk menghangatkan makanan di etalase.<br>
+          <b>Lampu Neonflex 5M</b> — lampu hias fleksibel berbentuk seperti selang neon.
+        </div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="LAMPU LED 6W 9W 12W 18W">
+      <div>
+        <div class="item-name">Lampu LED (6W / 9W / 12W / 18W / 3 Warna)</div>
+        <div class="item-desc">Lampu LED standar untuk rumah/kantor. Makin besar watt = makin terang. 6W cocok kamar kecil, 18W untuk ruang besar. "3 warna" = bisa diubah antara putih hangat, putih natural, dan putih dingin.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="PAKU CLEAN 6 MM">
+      <div>
+        <div class="item-name">PAKU CLEAN 6 MM</div>
+        <div class="item-desc">Klip/staples kabel khusus untuk menempel kabel di tembok. Dipakukan ke tembok dan kabel masuk ke klip-nya. Ukuran 6mm untuk kabel kecil seperti kabel listrik tipis.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="LAMPU OUTBOW / LAMPU SERI">
+      <div>
+        <div class="item-name">Lampu Outbow & Lampu Seri</div>
+        <div class="item-desc"><b>Lampu Outbow</b> = lampu gantung/tempel untuk luar ruangan (outdoor), dilengkapi fitting dan kap lampu. <b>Lampu Seri</b> = lampu kecil-kecil yang tersambung satu rangkaian, biasa untuk dekorasi (lampu natal/hias).</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================= PELENGKAP INTERNET ============================= -->
+<section class="cat-section" data-cat="pelengkap">
+  <div class="cat-header" style="background:#111a1d;border-color:var(--accent2)">
+    <span class="icon">🌐</span>
+    <div>
+      <h2>PELENGKAP INTERNET</h2>
+      <p>Router, kabel LAN, TV Box, alat crimping & aksesoris jaringan</p>
+    </div>
+  </div>
+  <div class="items-grid">
+
+    <div class="item-card" data-name="TP LINK ROUTER 820N">
+      <div>
+        <div class="item-name">TP LINK ROUTER 820N</div>
+        <div class="item-desc">Router WiFi merk TP-Link. Dipakai untuk membuat jaringan WiFi di rumah/kantor, membagi koneksi internet dari ONU/modem ke banyak perangkat. Model 820N = WiFi standar 2.4GHz.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="TV BOX 16+256 GB / TV BOX MURAH">
+      <div>
+        <div class="item-name">TV BOX (16+256 GB & Murah)</div>
+        <div class="item-desc">Android TV Box — perangkat kecil yang disambungkan ke TV biasa via HDMI, mengubahnya jadi Smart TV. Bisa streaming YouTube, Netflix, dll. Spesifikasi 16GB RAM + 256GB storage = versi premium.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="DESKTOP METWORK MS105G">
+      <div>
+        <div class="item-name">DESKTOP NETWORK MS105G</div>
+        <div class="item-desc">Switch jaringan (network switch) — kotak kecil dengan beberapa port LAN. Dipakai untuk menghubungkan banyak perangkat ke internet sekaligus tanpa WiFi, cukup dengan kabel LAN.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="HTB 3100">
+      <div>
+        <div class="item-name">HTB 3100</div>
+        <div class="item-desc">Media converter fiber-to-LAN. Mengubah sinyal fiber optik menjadi sinyal LAN ethernet standar. Dipakai di sisi pelanggan yang tidak pakai ONU tapi butuh koneksi dari kabel fiber.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="WIRELESS DISPLAY">
+      <div>
+        <div class="item-name">WIRELESS DISPLAY</div>
+        <div class="item-desc">Dongle/adapter yang ditancap ke HDMI TV/monitor untuk menerima tampilan layar dari HP/laptop secara nirkabel (mirip Chromecast atau Miracast). Berguna untuk presentasi atau mirroring layar.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="DHMI CONVERTER / RCA TO HDMI">
+      <div>
+        <div class="item-name">HDMI Converter & RCA to HDMI</div>
+        <div class="item-desc">Konverter untuk mengubah format sinyal video. HDMI Converter bisa HDMI ke VGA atau sebaliknya. RCA to HDMI = mengubah sinyal kabel RCA lama (kuning/merah/putih) ke HDMI untuk TV modern.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="KEPALA LAN / TUTUP KEPALA LAN">
+      <div>
+        <div class="item-name">KEPALA LAN (RJ45) & Tutupnya</div>
+        <div class="item-desc">Konektor RJ45 — ujung plastik transparan yang dipasang di ujung kabel LAN. Tanpa ini kabel LAN tidak bisa dipakai. Tutup kepala LAN = boot/pelindung karet biar konektor tidak mudah patah.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="CRIMPING LAN">
+      <div>
+        <div class="item-name">CRIMPING LAN</div>
+        <div class="item-desc">Tang crimping — alat khusus untuk menjepit/mengunci konektor RJ45 ke kabel LAN. Wajib ada kalau mau bikin kabel LAN sendiri. Tanpa tang ini, konektor tidak bisa terpasang kuat.</div>
+        <div class="item-tip">💡 Satu alat yang paling sering dipakai teknisi lapangan</div>
+      </div>
+      <span class="item-tag tag-alat">alat</span>
+    </div>
+
+    <div class="item-card" data-name="TANG KUPAS / TANG STRIPPER">
+      <div>
+        <div class="item-name">TANG KUPAS & TANG STRIPPER</div>
+        <div class="item-desc">Alat untuk mengupas kulit/isolasi luar kabel tanpa merusak isi kabelnya. Tang Kupas untuk kabel umum, Tang Stripper untuk kabel LAN (lebih presisi, bisa kupas setiap inti kecil).</div>
+      </div>
+      <span class="item-tag tag-alat">alat</span>
+    </div>
+
+    <div class="item-card" data-name="OBENG - & +">
+      <div>
+        <div class="item-name">OBENG - & +</div>
+        <div class="item-desc">Obeng minus (-)  dan obeng plus (+). Alat dasar untuk memasang/melepas baut pada perangkat jaringan, kotak ODP, panel, dan lain-lain.</div>
+      </div>
+      <span class="item-tag tag-alat">alat</span>
+    </div>
+
+    <div class="item-card" data-name="KIPAS PC XBT">
+      <div>
+        <div class="item-name">KIPAS PC XBT</div>
+        <div class="item-desc">Kipas pendingin untuk PC/komputer atau perangkat jaringan yang butuh aliran udara. Merk XBT. Dipakai sebagai pengganti kipas yang rusak atau untuk tambahan pendingin.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="KABEL LAN SPECTRA / METER">
+      <div>
+        <div class="item-name">KABEL LAN SPECTRA (per meter)</div>
+        <div class="item-desc">Kabel LAN (ethernet) yang dijual per meter, belum ada konektor. Dipakai teknisi untuk bikin kabel LAN custom sesuai panjang yang dibutuhkan, lalu dipasangi kepala RJ45 pakai tang crimping.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="KABEL LAN JADI 1M 2M 3M / LAN 25M 15M 10M">
+      <div>
+        <div class="item-name">Kabel LAN Jadi (1M–25M)</div>
+        <div class="item-desc">Kabel LAN siap pakai, sudah ada konektor RJ45 di kedua ujung. Tinggal tancap. Tersedia berbagai panjang: 1M, 2M, 3M untuk kabel pendek; 10M, 15M, 25M untuk koneksi lebih jauh.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="LAN 15M CAT 6 KUALITAS OK / LAN 3M HITAM HIGH QUALITY">
+      <div>
+        <div class="item-name">LAN CAT 6 & LAN High Quality</div>
+        <div class="item-desc">Kabel LAN dengan standar CAT 6 — lebih cepat dan lebih stabil dari CAT 5 biasa, mendukung kecepatan hingga 1 Gbps. "High Quality" = kabel lebih tebal dan tembaga lebih murni.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="BELALAI berbagai ukuran">
+      <div>
+        <div class="item-name">BELALAI / CABLE TIE (berbagai ukuran & warna)</div>
+        <div class="item-desc">Cable tie / pengikat kabel dari plastik (mirip restleting sekali pakai). Dipakai untuk mengikat dan merapikan kumpulan kabel. Ukuran 2.5×100mm untuk kabel kecil, 2.5×150mm untuk yang lebih besar. Tersedia hitam, putih, hijau, biru.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="KARET TANGGA">
+      <div>
+        <div class="item-name">KARET TANGGA</div>
+        <div class="item-desc">Karet anti-slip untuk kaki tangga. Dipasang di ujung kaki tangga besi/aluminium supaya tidak licin saat dipakai naik untuk instalasi di tempat tinggi.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="KABEL 4 CORE SPECTRA JELLY TUBE / KABEL 1 CORE CORLING / ISI ODP 1:4 / ADAPTOR 3A">
+      <div>
+        <div class="item-name">Kabel 4 Core Jelly Tube, 1 Core Corling, ISI ODP 1:4, Adaptor 3A</div>
+        <div class="item-desc">
+          <b>Kabel 4 Core Jelly Tube</b> = kabel fiber 4 inti dengan pelindung gel di dalamnya, tahan air untuk outdoor.<br>
+          <b>1 Core Corling</b> = kabel fiber 1 inti merk Corling.<br>
+          <b>ISI ODP 1:4</b> = splitter kecil 1 input ke 4 output.<br>
+          <b>Adaptor 3A</b> = adaptor dengan output 3 ampere untuk perangkat yang butuh arus lebih besar.
+        </div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================= CCTV ============================= -->
+<section class="cat-section" data-cat="cctv">
+  <div class="cat-header" style="background:#1d1120;border-color:var(--accent4)">
+    <span class="icon">📹</span>
+    <div>
+      <h2>CCTV DAN PERLENGKAPAN</h2>
+      <p>Kamera CCTV, power supply, konektor, kabel & aksesoris</p>
+    </div>
+  </div>
+  <div class="items-grid">
+
+    <div class="item-card" data-name="CCTV LAMPU V380">
+      <div>
+        <div class="item-name">CCTV LAMPU V380</div>
+        <div class="item-desc">Kamera CCTV WiFi yang dilengkapi lampu sorot. Dikelola lewat aplikasi V380 di HP. Bisa streaming langsung, rekam, dan menyala otomatis saat ada gerak. Cocok untuk indoor/outdoor tanpa kabel LAN.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="CCTV 8MP 5G DUAL CAM">
+      <div>
+        <div class="item-name">CCTV 8MP 5G DUAL CAM</div>
+        <div class="item-desc">Kamera CCTV resolusi tinggi 8 Megapixel dengan 2 lensa (dual camera: biasanya 1 lensa normal + 1 fisheye atau night vision). Terhubung WiFi 5GHz untuk streaming lebih stabil.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="CCTV 8 MP">
+      <div>
+        <div class="item-name">CCTV 8 MP</div>
+        <div class="item-desc">Kamera CCTV analog/IP 8 Megapixel standar. Resolusi tinggi, gambar lebih jelas dibanding CCTV lama. Butuh kabel RG59 (atau kabel LAN untuk IP cam) dan power supply terpisah.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="POWER SUPLAY 100/150/200 WATT 12V">
+      <div>
+        <div class="item-name">POWER SUPPLY 12V (100W / 150W / 200W)</div>
+        <div class="item-desc">Power supply yang mengubah listrik PLN 220V ke 12V DC. Dipakai untuk mengaliri daya ke banyak kamera CCTV sekaligus dari 1 sumber. Makin besar watt = bisa pasok lebih banyak kamera.</div>
+        <div class="item-tip">💡 100W cukup untuk 4–6 kamera, 200W untuk 8–12 kamera</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="POWER SUPLAI OUTDOOR 100 WATT">
+      <div>
+        <div class="item-name">POWER SUPPLY OUTDOOR 100W</div>
+        <div class="item-desc">Power supply 100 watt khusus outdoor — punya casing tahan air (waterproof/weatherproof). Dipasang di luar ruangan untuk mengaliri CCTV atau lampu outdoor.</div>
+      </div>
+      <span class="item-tag tag-aktif">aktif</span>
+    </div>
+
+    <div class="item-card" data-name="JACK DC MALE / JACK DC FEMALE">
+      <div>
+        <div class="item-name">Jack DC Male & Female</div>
+        <div class="item-desc">Konektor daya DC berbentuk bulat kecil. Male (jantan) = colokan, Female (betina) = soket. Dipakai di ujung kabel power kamera CCTV. Jack DC male ditancapkan ke jack DC female di kamera.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="KONEKTOR CCTV">
+      <div>
+        <div class="item-name">KONEKTOR CCTV</div>
+        <div class="item-desc">Konektor BNC — ujung kabel CCTV yang disambungkan ke DVR/NVR atau layar. Bentuknya seperti soket putar dengan pengunci. Dipasang di ujung kabel RG59 untuk koneksi video analog.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="KABEL CCTV RG59 + POWER 100M">
+      <div>
+        <div class="item-name">KABEL CCTV RG59 + POWER 100M</div>
+        <div class="item-desc">Kabel khusus CCTV 100 meter — di dalamnya ada 2 kabel sekaligus: kabel koaxial RG59 untuk sinyal video + kabel power untuk listrik kamera. Jadi 1 kabel untuk semua kebutuhan kamera CCTV analog.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="CARD READER TYPE C">
+      <div>
+        <div class="item-name">CARD READER TYPE C</div>
+        <div class="item-desc">Pembaca kartu SD/microSD dengan konektor USB Type-C. Dipakai untuk memindahkan rekaman CCTV dari memory card ke laptop/HP, atau untuk backup data.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="BELALAI 25X100 BIRU">
+      <div>
+        <div class="item-name">BELALAI 25×100 BIRU (Cable Tie Besar)</div>
+        <div class="item-desc">Cable tie ukuran besar (lebar 25mm, panjang 100mm) warna biru. Dipakai untuk mengikat kumpulan kabel CCTV yang besar dan berat di tiang atau dinding luar.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="KABEL HDMI / HDMI MTECH">
+      <div>
+        <div class="item-name">Kabel HDMI (3M, 5M) & HDMI MTech</div>
+        <div class="item-desc">Kabel HDMI untuk menghubungkan DVR/NVR CCTV ke monitor/TV agar bisa melihat tampilan kamera langsung di layar. MTech = merk tertentu. Tersedia 3 meter dan 5 meter.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="KABEL LAN JADI 4M / 5M">
+      <div>
+        <div class="item-name">Kabel LAN Jadi 4M & 5M</div>
+        <div class="item-desc">Kabel ethernet siap pakai panjang 4 dan 5 meter. Di kategori CCTV dipakai untuk IP Camera (kamera CCTV modern yang pakai kabel LAN bukan RG59).</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+    <div class="item-card" data-name="KABEL PRINTIER">
+      <div>
+        <div class="item-name">KABEL PRINTER</div>
+        <div class="item-desc">Kabel USB printer (USB-A ke USB-B). Dipakai untuk menghubungkan printer ke komputer. Di toko ini mungkin dipakai juga untuk menghubungkan DVR CCTV ke PC atau perangkat lain.</div>
+      </div>
+      <span class="item-tag tag-kabel">kabel</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================= BATRAI ============================= -->
+<section class="cat-section" data-cat="batrai">
+  <div class="cat-header" style="background:#1a1a2d;border-color:var(--accent5)">
+    <span class="icon">🔋</span>
+    <div>
+      <h2>BATRAI DLL</h2>
+      <p>Baterai berbagai ukuran & charger</p>
+    </div>
+  </div>
+  <div class="items-grid">
+
+    <div class="item-card" data-name="BATERAI KECIL AA">
+      <div>
+        <div class="item-name">BATERAI AA (Kecil)</div>
+        <div class="item-desc">Baterai ukuran AA — ukuran paling umum. Dipakai di remote TV, remote CCTV, senter, jam dinding, perangkat genggam. Bisa AA alkaline (sekali pakai) atau rechargeable.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="BATERAY BESAR AAA">
+      <div>
+        <div class="item-name">BATERAI AAA (Besar di Nama, Kecil di Fisik)</div>
+        <div class="item-desc">Baterai ukuran AAA — lebih kecil dari AA. Dipakai di remote slim, pointer, earphone bluetooth, lampu kecil. Nama "besar" di sini mungkin merujuk ke kuantitas atau kapasitas mAh.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="CASAN BATREY">
+      <div>
+        <div class="item-name">CASAN BATREI (Charger Baterai)</div>
+        <div class="item-desc">Charger untuk mengisi ulang baterai rechargeable AA/AAA. Hemat karena baterai bisa dipakai berulang kali. Biasanya bisa mengisi 2–4 baterai sekaligus.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="SONY CR 2032">
+      <div>
+        <div class="item-name">SONY CR 2032</div>
+        <div class="item-desc">Baterai koin/lithium bulat tipis diameter 20mm, 3 volt. Paling umum dipakai di: jam tangan, remote mobil, BIOS motherboard, timbangan digital, kalkulator. Merk Sony = kualitas terjamin.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="BATRAI LR41">
+      <div>
+        <div class="item-name">BATRAI LR41</div>
+        <div class="item-desc">Baterai koin kecil diameter 7.9mm. Dipakai di jam tangan digital kecil, termometer telinga, mainan kecil, dan perangkat medis seperti alat bantu dengar lama.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+    <div class="item-card" data-name="BATRAI LR44">
+      <div>
+        <div class="item-name">BATRAI LR44</div>
+        <div class="item-desc">Baterai koin sedikit lebih besar dari LR41 (diameter 11.6mm). Dipakai di kalkulator, remote kecil, kamera analog, mainan, dan perangkat portabel lainnya.</div>
+      </div>
+      <span class="item-tag tag-aksesoris">aksesoris</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- NO RESULTS -->
+<div class="no-results" id="noResults">
+  <div style="font-size:32px;margin-bottom:8px">🔍</div>
+  <div style="font-size:14px">Barang tidak ditemukan</div>
+  <div style="font-size:12px;color:#475569;margin-top:4px">Coba kata kunci lain</div>
+</div>
+
+</main>
+
+<script>
+const tabs = document.querySelectorAll('.tab');
+const sections = document.querySelectorAll('.cat-section');
+const searchInput = document.getElementById('search');
+const main = document.getElementById('main');
+const noResults = document.getElementById('noResults');
+
+// TAB CLICK
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const cat = tab.dataset.cat;
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    searchInput.value = '';
+    main.classList.remove('search-mode');
+    document.querySelectorAll('.item-card').forEach(c => c.classList.remove('hidden'));
+    sections.forEach(s => {
+      s.classList.toggle('visible', cat === 'all' || s.dataset.cat === cat);
+    });
+    noResults.classList.remove('show');
+  });
+});
+
+// SEARCH
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  if (!q) {
+    main.classList.remove('search-mode');
+    const activeCat = document.querySelector('.tab.active').dataset.cat;
+    sections.forEach(s => {
+      s.classList.toggle('visible', activeCat === 'all' || s.dataset.cat === activeCat);
+    });
+    document.querySelectorAll('.item-card').forEach(c => c.classList.remove('hidden'));
+    noResults.classList.remove('show');
+    return;
+  }
+  main.classList.add('search-mode');
+  sections.forEach(s => s.classList.add('visible'));
+  let found = 0;
+  document.querySelectorAll('.item-card').forEach(card => {
+    const name = (card.dataset.name || '').toLowerCase();
+    const text = card.textContent.toLowerCase();
+    const match = name.includes(q) || text.includes(q);
+    card.classList.toggle('hidden', !match);
+    if (match) found++;
+  });
+  noResults.classList.toggle('show', found === 0);
+});
+</script>
+</body>
+</html>
